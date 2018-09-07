@@ -45,13 +45,13 @@ def pixel_shuffle(input, upscale_x_factor, upscale_y_factor):
 class Encoder(nn.Module):
     def __init__(self):
         super(Encoder, self).__init__()
-        self.conv1 = nn.Conv2d(1, 10, kernel_size=(1, 9), padding=(1,4))
+        self.conv1 = nn.Conv2d(1, 10, kernel_size=(1, 9), padding=(1, 4))
         self.bn1 = nn.BatchNorm2d(10)
         self.relu1 = nn.ReLU()
-        self.conv2 = nn.Conv2d(10, 10, kernel_size=(1, 9), padding=(1,4))
+        self.conv2 = nn.Conv2d(10, 10, kernel_size=(1, 9), padding=(1, 4))
         self.bn2 = nn.BatchNorm2d(10)
         self.relu2 = nn.ReLU()
-        self.conv3 = nn.Conv2d(10, 10, kernel_size=(1, 9), padding=(1,4))
+        self.conv3 = nn.Conv2d(10, 10, kernel_size=(1, 9), padding=(1, 4))
 
     def forward(self, x):
         x = self.conv1(x)
@@ -75,13 +75,13 @@ class Encoder(nn.Module):
 class Decoder(nn.Module):
     def __init__(self):
         super(Decoder, self).__init__()
-        self.conv1 = nn.ConvTranspose2d(10, 20, kernel_size=(1, 9), padding=(1,4))
+        self.conv1 = nn.ConvTranspose2d(10, 20, kernel_size=(1, 9), padding=(1, 4))
         self.bn1 = nn.BatchNorm2d(20)
         self.relu1 = nn.ReLU()
-        self.conv2 = nn.ConvTranspose2d(10, 20, kernel_size=(1, 9), padding=(1,4))
+        self.conv2 = nn.ConvTranspose2d(10, 20, kernel_size=(1, 9), padding=(1, 4))
         self.bn2 = nn.BatchNorm2d(20)
         self.relu2 = nn.ReLU()
-        self.conv3 = nn.ConvTranspose2d(10, 20, kernel_size=(1, 9), padding=(1,4))
+        self.conv3 = nn.ConvTranspose2d(10, 20, kernel_size=(1, 9), padding=(1, 4))
         self.c1x1 = nn.Conv2d(10, 1, kernel_size=1)
 
     def forward(self, x):
@@ -114,7 +114,7 @@ def train(epoch):
     dec.train()
 
     for idx, x in enumerate(dataloader):
-        x = x.unsqueeze(0).unsqueeze(0)
+        x = x.unsqueeze(1).unsqueeze(1)
         x = Variable(x)
 
         z = enc(x)
@@ -128,7 +128,23 @@ def train(epoch):
         enc_optim.step()
         dec_optim.step()
 
-        print(idx)
+        if idx % 100 == 0:
+            print(idx, loss)
 
 
-train(0)
+for epoch in range(5):
+    train(epoch)
+
+import matplotlib.pyplot as plt
+
+a = next(iter(dataloader))
+plt.plot(a.data.numpy()[0, :])
+plt.show()
+
+b = enc(a.unsqueeze(1).unsqueeze(1))
+plt.imshow(b.data.numpy()[0,0,:])
+plt.show()
+
+c = dec(b)
+plt.plot(c.data.numpy()[0,0,0,:])
+plt.show()
