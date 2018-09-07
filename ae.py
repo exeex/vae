@@ -1,13 +1,8 @@
-from gen import SineData
-from torch.utils.data import DataLoader
+
 import torch
 from torch import nn
-
-from torch.autograd import Variable
 import torch.nn.functional as F
 
-dataset = SineData()
-dataloader = DataLoader(dataset, batch_size=10, num_workers=5)
 
 
 def pixel_shuffle(input, upscale_x_factor, upscale_y_factor):
@@ -102,49 +97,3 @@ class Decoder(nn.Module):
 
         return self.c1x1(x)
 
-
-enc = Encoder()
-dec = Decoder()
-enc_optim = torch.optim.Adam(enc.parameters(), lr=0.001)
-dec_optim = torch.optim.Adam(dec.parameters(), lr=0.001)
-
-
-def train(epoch):
-    enc.train()
-    dec.train()
-
-    for idx, x in enumerate(dataloader):
-        x = x.unsqueeze(1).unsqueeze(1)
-        x = Variable(x)
-
-        z = enc(x)
-        x_ = dec(z)
-
-        loss = torch.sum((x - x_) ** 2)
-
-        enc_optim.zero_grad()
-        dec_optim.zero_grad()
-        loss.backward()
-        enc_optim.step()
-        dec_optim.step()
-
-        if idx % 100 == 0:
-            print(idx, loss)
-
-
-for epoch in range(5):
-    train(epoch)
-
-import matplotlib.pyplot as plt
-
-a = next(iter(dataloader))
-plt.plot(a.data.numpy()[0, :])
-plt.show()
-
-b = enc(a.unsqueeze(1).unsqueeze(1))
-plt.imshow(b.data.numpy()[0,0,:])
-plt.show()
-
-c = dec(b)
-plt.plot(c.data.numpy()[0,0,0,:])
-plt.show()
