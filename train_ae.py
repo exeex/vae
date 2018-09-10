@@ -1,8 +1,9 @@
 from gen import SineData
 from torch.utils.data import DataLoader
 from torch.autograd import Variable
-from ae import Encoder, Decoder
 import torch
+
+from model.ae import Encoder, Decoder
 
 dataset = SineData()
 dataloader = DataLoader(dataset, batch_size=10, num_workers=5)
@@ -17,9 +18,11 @@ def train(epoch):
     enc.train()
     dec.train()
 
-    for idx, x in enumerate(dataloader):
-        x = x.unsqueeze(1).unsqueeze(1)
+    for idx, data in enumerate(dataloader):
+
+        x = data['wave'].unsqueeze(1).unsqueeze(1)
         x = Variable(x)
+        h = Variable(data['label'])
 
         z = enc(x)
         x_ = dec(z)
@@ -38,7 +41,7 @@ def train(epoch):
 
 if __name__ == '__main__':
 
-    for epoch in range(5):
+    for epoch in range(3):
         train(epoch)
 
     import matplotlib.pyplot as plt
@@ -57,6 +60,7 @@ if __name__ == '__main__':
         plt.plot(c.data.numpy()[idx, 0, 0, :])
         plt.show()
 
-        plot(0)
-        plot(1)
-        plot(2)
+
+    plot(0)
+    plot(1)
+    plot(2)
