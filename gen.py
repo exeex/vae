@@ -43,13 +43,19 @@ class DataGen:
     def gen(self, p_idx, e_idx, shift=None, phase=None, gain=None):
 
         if shift is None:
-            shift = random.randint(-100, 100)
+            shift = random.randint(-98, 98)
         if phase is None:
             phase = random.uniform(-1, 1)
         if gain is None:
             gain = random.gauss(1, 0.3)
 
-        return pad_and_shift(self.envelopes[e_idx]() * sine(self.periods[p_idx], phase=phase), shift=shift) * gain
+        wave = pad_and_shift(self.envelopes[e_idx]() * sine(self.periods[p_idx], phase=phase), shift=shift) * gain
+
+        label_ = pad_and_shift(indentity(), shift=shift)
+        label = np.zeros((len(self.envelopes), len(self.periods), wave.shape[0]))
+        label[e_idx, p_idx, :] = label_
+
+        return wave, label
 
 
 def demo():
@@ -67,12 +73,10 @@ class SineData(Dataset):
         return 10000
 
     def __getitem__(self, idx):
-        data = self.g.gen(random.randint(0, 2), random.randint(0, 2))
-        return data.astype('float32')
+        wave, label = self.g.gen(random.randint(0, 2), random.randint(0, 2))
 
+        return {'wave': wave.astype('float32'), 'label': label.astype('float32')}
 
 
 if __name__ == '__main__':
-
     g = SineData()
-    print(g[0].shape)
