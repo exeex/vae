@@ -38,20 +38,20 @@ class DataGen:
 
         self.periods = [10, 20, 30]
         self.envelopes = [gaussian, exp, indentity]
-        self.length = 98
 
     def gen(self, p_idx, e_idx, shift=None, phase=None, gain=None):
 
         if shift is None:
-            shift = random.randint(-98, 98)
+            shift = random.randint(-200, 200)
         if phase is None:
             phase = random.uniform(-1, 1)
         if gain is None:
             gain = random.gauss(1, 0.3)
 
-        wave = pad_and_shift(self.envelopes[e_idx]() * sine(self.periods[p_idx], phase=phase), shift=shift) * gain
+        wave = gain * pad_and_shift(self.envelopes[e_idx]() * sine(self.periods[p_idx], phase=phase),
+                                    pad=207, shift=shift)
+        label_ = pad_and_shift(indentity(), pad=207, shift=shift)
 
-        label_ = pad_and_shift(indentity(), shift=shift)
         label = np.zeros((len(self.envelopes), len(self.periods), wave.shape[0]))
         label[e_idx, p_idx, :] = label_
 
@@ -74,8 +74,10 @@ class SineData(Dataset):
 
     def __getitem__(self, idx):
         wave, label = self.g.gen(random.randint(0, 2), random.randint(0, 2))
+        wave = torch.Tensor(wave.astype('float32'))
+        label = torch.Tensor(label.astype('float32'))
 
-        return {'wave': wave.astype('float32'), 'label': label.astype('float32')}
+        return {'wave': wave, 'label': label}
 
 
 if __name__ == '__main__':

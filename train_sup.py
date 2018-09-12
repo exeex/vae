@@ -28,8 +28,7 @@ def train(epoch):
         h = Variable(data['label'])
 
         z = enc(x)
-        x_ = dec(F.max_pool2d(h,(1,8)))
-
+        x_ = dec(F.max_pool2d(h, (1, 8)))
 
         loss1 = torch.sum((z.repeat([1, 1, 1, 8]) - h) ** 2)
         loss2 = torch.sum((x - x_) ** 2)
@@ -48,7 +47,7 @@ def train(epoch):
 
 if __name__ == '__main__':
 
-    for epoch in range(2):
+    for epoch in range(1):
         train(epoch)
 
     import matplotlib.pyplot as plt
@@ -60,7 +59,7 @@ if __name__ == '__main__':
         plt.show()
 
         z = enc(x.unsqueeze(1).unsqueeze(1))
-        plt.imshow(z.data.numpy()[idx, 0, :])
+        plt.imshow(z.data.numpy()[idx, :, :].reshape[9,:,:])
         plt.show()
 
         x_ = dec(z)
