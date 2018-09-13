@@ -23,8 +23,8 @@ def exp(length=98, tau=1):
     return np.exp(-np.linspace(0, 2, num=length))
 
 
-def indentity(length=100, ):
-    return np.zeros((98,)) + 1
+def indentity(length=98):
+    return np.zeros((length,)) + 1
 
 
 def pad_and_shift(x, pad=99, shift=50):
@@ -82,3 +82,7 @@ class SineData(Dataset):
 
 if __name__ == '__main__':
     g = SineData()
+    plt.plot(g[0]['wave'].data.numpy())
+    plt.show()
+    plt.imshow(g[0]['label'][0, :, :])
+    plt.show()

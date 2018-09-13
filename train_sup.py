@@ -59,8 +59,8 @@ if __name__ == '__main__':
         plt.show()
 
         z = enc(x.unsqueeze(1).unsqueeze(1))
-        plt.imshow(z.data.numpy()[idx, :, :].reshape[9,:,:])
-        plt.show()
+        # plt.imshow(z.data.numpy()[idx, :, :])
+        # plt.show()
 
         x_ = dec(z)
         plt.plot(x_.data.numpy()[idx, 0, 0, :])

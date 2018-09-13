@@ -41,14 +41,14 @@ def train(epoch):
 
 if __name__ == '__main__':
 
-    for epoch in range(3):
+    for epoch in range(1):
         train(epoch)
 
     import matplotlib.pyplot as plt
 
 
     def plot(idx):
-        a = next(iter(dataloader))
+        a = next(iter(dataloader))['wave']
         plt.plot(a.data.numpy()[idx, :])
         plt.show()
 
